@@ -63,9 +63,10 @@ def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
 		# Create a new fleet and center the ship.
 		create_fleet(ai_settings, screen, ship, aliens)
 		ship.center_ship()
-	
+		stats.score = 0 # Reset score to 0
 		# Pause.
 		sleep(0.5)
+
 	else:
 		stats.game_active = False
 			
@@ -152,14 +153,19 @@ def update_screen(ai_settings, screen, stats, ship, aliens, bullets, play_button
 	"""Update images on the screen and flip to the new screen."""
 	# Redraw the screen during each pass through the loop
 	screen.fill(ai_settings.bg_color)
-	
+
 	# Redraw all bullets behind ship and aliens.
 	for bullet in bullets.sprites():
 		bullet.draw_bullet()
 
 	ship.blitme()
 	aliens.draw(screen)
-		
+
+	# Draw the score
+	font = pygame.font.SysFont(None, 48)  # Chọn phông chữ và kích thước
+	score_image = font.render("Score: " + str(stats.score), True, (30, 30, 30))  # Render điểm
+	screen.blit(score_image, (10, 10))  # Vị trí hiển thị điểm trên màn hình	
+
 	# Draw the play button if the game is inactive.
 	if not stats.game_active:
 		play_button.draw_button()
@@ -167,7 +173,7 @@ def update_screen(ai_settings, screen, stats, ship, aliens, bullets, play_button
 	# Make the most recently drawn screen visible
 	pygame.display.flip()
 	
-def update_bullets(ai_settings, screen, ship, aliens, bullets):
+def update_bullets(ai_settings, screen,stats, ship, aliens, bullets):
 	"""Update position of the bullets and rid of old bullets."""
 	# Update bullet positions.
 	bullets.update()
@@ -177,13 +183,15 @@ def update_bullets(ai_settings, screen, ship, aliens, bullets):
 		if bullet.rect.bottom <= 0:
 			bullets.remove(bullet)
 	
-	check_bullet_alien_collision(ai_settings, screen, ship, aliens, bullets)
+	check_bullet_alien_collision(ai_settings, screen, stats, ship, aliens, bullets)
 			
-def check_bullet_alien_collision(ai_settings, screen, ship, aliens, bullets):
+def check_bullet_alien_collision(ai_settings, screen,stats, ship, aliens, bullets):
 	"""Respond to bullet-alien collision."""
 	# Remove any bullets and aliens that have collided.
 	collisions = pygame.sprite.groupcollide(bullets, aliens, True, True) # reference in Pygame docs
-	
+	if collisions:
+		for aliens in collisions.values():
+			stats.score += 10
 	if len(aliens) == 0:
 		# Destroy existing bullets and create new fleet.
 		bullets.empty()
