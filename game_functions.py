@@ -64,6 +64,8 @@ def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
 		create_fleet(ai_settings, screen, ship, aliens)
 		ship.center_ship()
 		stats.score = 0 # Reset score to 0
+		stats.level = 1 # Reset level to 1
+		ai_settings.reset_difficulty() # Reset difficulty to default
 		# Pause.
 		sleep(0.5)
 
@@ -166,6 +168,9 @@ def update_screen(ai_settings, screen, stats, ship, aliens, bullets, play_button
 	score_image = font.render("Score: " + str(stats.score), True, (30, 30, 30))  # Render điểm
 	screen.blit(score_image, (10, 10))  # Vị trí hiển thị điểm trên màn hình	
 
+	level_image = font.render("Level: " + str(stats.level), True, (30, 30, 30))
+	screen.blit(level_image, (10,40))
+
 	# Draw the play button if the game is inactive.
 	if not stats.game_active:
 		play_button.draw_button()
@@ -196,3 +201,6 @@ def check_bullet_alien_collision(ai_settings, screen,stats, ship, aliens, bullet
 		# Destroy existing bullets and create new fleet.
 		bullets.empty()
 		create_fleet(ai_settings, screen, ship, aliens)
+		stats.level += 1
+		ai_settings.increase_difficulty()
+    	
