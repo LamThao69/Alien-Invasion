@@ -6,7 +6,7 @@ from pygame.sprite import Group
 from alien import Alien
 from game_stats import GameStats
 from button import Button
-
+from alien_bullet import AlienBullet
 def run_game():
 	# Initialize game and create a screen object
 	pygame.init()
@@ -30,19 +30,21 @@ def run_game():
 	
 	# Make a group of aliens.
 	aliens = Group()
-	
+	alien_bullets = Group()
+
 	# Create the fleet of aliens.
 	gf.create_fleet(ai_settings, screen, ship, aliens)
 	
 	# Start the main loop for the game
 	while True:
 		# Watch for the keyboard and mouse events
-		gf.check_events(ai_settings, screen, stats, play_button, ship, bullets)
+		gf.check_events(ai_settings, screen, stats, play_button, ship, bullets,aliens)
 		if stats.game_active:
 			ship.update()
 			gf.update_bullets(ai_settings, screen,stats, ship, aliens, bullets)
-			gf.update_aliens(ai_settings, stats, screen, ship, aliens, bullets)
-		
-		gf.update_screen(ai_settings, screen, stats, ship, aliens, bullets, play_button)
+			gf.update_aliens(ai_settings, stats, screen, ship, aliens, bullets,alien_bullets)
+			gf.alien_fire(ai_settings, screen, aliens, alien_bullets)
+			gf.update_alien_bullets(ai_settings, stats, screen, ship, aliens, bullets, alien_bullets)
+		gf.update_screen(ai_settings, screen, stats, ship, aliens, bullets,play_button,alien_bullets)
 	
 run_game()
